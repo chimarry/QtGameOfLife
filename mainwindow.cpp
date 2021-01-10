@@ -14,10 +14,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     QString safe= "QProgressBar::chunk {background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #5500ff,stop: 0.4999 #46a,stop: 0.5 #45a,stop: 1 #238 );}";
     ui->simulationProgessBar->setStyleSheet(safe);
+    ui->getSubSegmentButton->setEnabled(false);
 }
 MainWindow::~MainWindow()
 {
     delete ui;
+    if(executor)
+        delete(executor);
+    if(segmentToAdd)
+        delete(segmentToAdd);
 }
 
 void MainWindow::changeImage(const QString filename, int iteration){
@@ -35,6 +40,7 @@ void MainWindow::on_simulateButton_clicked()
     ui->simulateButton->setEnabled(false);
     ui->initalizeFromImageButton->setEnabled(false);
     ui->addSubSegmentButton->setEnabled(false);
+    ui->getSubSegmentButton->setEnabled(false);
     ui->simulationProgessBar->setValue(0);
 
     qApp->processEvents();
@@ -47,7 +53,7 @@ void MainWindow::on_simulateButton_clicked()
     if(file[0] == '\0')
         file = nullptr;
     // Add one segment
-    ConwayGameOfLifeExecutor* executor =  new ConwayGameOfLifeExecutor(iterationCount, file);
+    executor =  new ConwayGameOfLifeExecutor(iterationCount, file);
     if(segmentToAdd)
         executor->addSubSegment(*segmentToAdd);
     else{
@@ -65,6 +71,7 @@ void MainWindow::on_simulateButton_clicked()
     ui->fileDisplayLabel->clear();
     this->initialFile = "";
     this->segmentToAdd = nullptr;
+    ui->getSubSegmentButton->setEnabled(true);
 }
 
 void MainWindow::on_initalizeFromImageButton_clicked()
@@ -105,4 +112,20 @@ void MainWindow::on_addSubSegmentButton_clicked()
     pixmap = pixmap.scaled(100,100);
     ui->subSegmentLabel->setPixmap(pixmap);
     ui->addSubSegmentButton->setEnabled(false);
+}
+
+void MainWindow::on_getSubSegmentButton_clicked()
+{
+    int x =  ui->getSubSegmentPositionX->toPlainText().toInt();
+    int y =  ui->getSubSegmentPositionY->toPlainText().toInt();
+    int rowCount = ui->getSubSegmentHeight->toPlainText().toInt();
+    int columnCount = ui->getSubSegmentWidth->toPlainText().toInt();
+    executor->saveSubSegment(x,y,rowCount,columnCount);
+
+    // Display segment
+    QImage image("C:\\Users\\Marija\\Desktop\\test\\segment.pgm");
+    image.scaled(100,100);
+    QPixmap pixmap = QPixmap::fromImage(image);
+    pixmap = pixmap.scaled(100,100);
+    ui->getSubSegmentLabel->setPixmap(pixmap);
 }

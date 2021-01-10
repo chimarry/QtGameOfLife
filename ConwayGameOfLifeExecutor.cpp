@@ -21,19 +21,19 @@ ConwayGameOfLifeExecutor::~ConwayGameOfLifeExecutor() {}
 void ConwayGameOfLifeExecutor::simulate() {
     int columnCount = 40;
     int rowCount = 40;
-    ConwayMatrix initialMatrix = ConwayMatrix(rowCount, columnCount);
+    gamePlatform = new ConwayMatrix(rowCount, columnCount);
     if(this->initialFile)
-        initialMatrix.fromImage(initialFile);
+        gamePlatform->fromImage(initialFile);
     else
-        initialMatrix.randomInitialize();
+        gamePlatform->randomInitialize();
 
     if (segmentToAdd)
     {
-        int* newDataWithSegment = addSubSegment(initialMatrix, *segmentToAdd);
-        initialMatrix.fromIntVector(newDataWithSegment);
+        int* newDataWithSegment = addSubSegment(*gamePlatform, *segmentToAdd);
+        gamePlatform->fromIntVector(newDataWithSegment);
     }
 
-    int* initialVector = initialMatrix.toIntVector();
+    int* initialVector = gamePlatform->toIntVector();
 
     cl_int error;
     cl_context context;
@@ -57,10 +57,9 @@ void ConwayGameOfLifeExecutor::simulate() {
     localWorkSize[0] = localWorkSize[1] = 4;
     globalWorkSize[0] = rowCount;
     globalWorkSize[1] = columnCount;
-
+    saveImage(*gamePlatform, 0);
     for (int i = 0; i < this->iterationCount; ++i)
     {
-        saveImage(initialMatrix, i);
         if (i != 0) {
             cl_mem tmp = inputScene;
             inputScene = outputScene;
@@ -78,7 +77,8 @@ void ConwayGameOfLifeExecutor::simulate() {
         error = clEnqueueReadBuffer(commandQueue, outputScene, CL_TRUE, 0, gameSceneSize, initialVector, 0, NULL, NULL);
         OpenCLConfiguration::printIfError(error);
 
-        initialMatrix.fromIntVector(initialVector);
+        gamePlatform->fromIntVector(initialVector);
+        saveImage(*gamePlatform, i+1);
     }
     clFinish(commandQueue);
 
@@ -100,10 +100,24 @@ int* ConwayGameOfLifeExecutor::addSubSegment(const ConwayMatrix& original, const
     return manipulateSubSegment(ADD_SUB_SEGMENT, original, subSegment.toIntVector(), x, y, subSegment.getRowCount(), subSegment.getColumnCount(), original.getSize());
 }
 
-int* ConwayGameOfLifeExecutor::getSubSegment(const ConwayMatrix& original, int positionRow, int positionColumn, int rowCount, int columnCount)
+int* ConwayGameOfLifeExecutor::getSubSegment(int positionX, int positionY, int rowCount, int columnCount)
+{
+    return getSubSegment(*gamePlatform, positionX, positionY, rowCount, columnCount);
+}
+
+int* ConwayGameOfLifeExecutor::getSubSegment(const ConwayMatrix& original, int positionX, int positionY, int rowCount, int columnCount)
 {
     size_t subSegmentSize = (size_t)rowCount * columnCount;
-    return manipulateSubSegment(GET_SUB_SEGMENT, original, new int[subSegmentSize], positionRow, positionColumn, rowCount, columnCount, subSegmentSize, true);
+    return manipulateSubSegment(GET_SUB_SEGMENT, original, new int[subSegmentSize], positionX, positionY, rowCount, columnCount, subSegmentSize, true);
+}
+
+void ConwayGameOfLifeExecutor::saveSubSegment(int positionX, int positionY, int rowCount, int columnCount)
+{
+    int* segment = getSubSegment(positionX,positionY,rowCount,columnCount);
+    ConwayMatrix segmentMatrix = ConwayMatrix(rowCount,columnCount);
+    segmentMatrix.fromIntVector(segment);
+    segmentMatrix.writeToImage("C:\\Users\\Marija\\Desktop\\test\\segment.pgm");
+    delete(segment);
 }
 
 int* ConwayGameOfLifeExecutor::manipulateSubSegment(const char* kernelName, const ConwayMatrix& original, int* subSegmentData,

@@ -22,10 +22,13 @@ private slots:
     void on_initalizeFromImageButton_clicked();
     void on_addSubSegmentButton_clicked();
 
+    void on_getSubSegmentButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QString initialFile;
     int iterationCount;
     ConwayGameOfLifeExecutor::SubSegment* segmentToAdd = nullptr;
+    ConwayGameOfLifeExecutor* executor;
 };
 #endif // MAINWINDOW_H

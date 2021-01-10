@@ -15,7 +15,7 @@ public:
         int rowCount;
         int columnCount;
     };
-Q_OBJECT
+    Q_OBJECT
 public:
     ConwayGameOfLifeExecutor() = delete;
     explicit ConwayGameOfLifeExecutor(int iterationCount, const char* fromFile = nullptr);
@@ -27,11 +27,13 @@ public:
 
     void simulate();
     void addSubSegment(SubSegment subSegmentInfo);
-    private:
-    int* addSubSegment(const ConwayMatrix& initialMatrix, const ConwayMatrix& subSegment);
+    int* getSubSegment(int positionX, int positionY, int rowCount, int columnCount);
     int* getSubSegment(const ConwayMatrix& initialMatrix, int positionRow, int positionColumn, int rowCount, int columnCount);
+    void  saveSubSegment(int positionRow, int positionColumn, int rowCount, int columnCount);
+private:
+    int* addSubSegment(const ConwayMatrix& initialMatrix, const ConwayMatrix& subSegment);
     int* manipulateSubSegment(const char* kernelName, const ConwayMatrix& initialMatrix, int* subsegment,
-        int positionRow, int positionColumn, int rowCount, int columnCount, int outputSize, bool getSubSegment = false);
+                              int positionRow, int positionColumn, int rowCount, int columnCount, int outputSize, bool getSubSegment = false);
 
 public slots:
     void saveImage(const ConwayMatrix& matrix, int iteration) const;
@@ -43,4 +45,5 @@ private:
     int iterationCount;
     const char* initialFile = nullptr;
     ConwayMatrix* segmentToAdd = nullptr;
+    ConwayMatrix* gamePlatform = nullptr;
 };
