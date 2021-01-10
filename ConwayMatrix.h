@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <tuple>
 #include <QObject>
 #include <windows.h>
 
@@ -43,7 +44,9 @@ public:
     }
     size_t getSize() const;
     size_t getColumnCount() const;
-
+    size_t getRowCount() const;
+    void setPosition(int, int);
+    std::tuple<int,int> getPosition() const;
 private:
     int n;
     int m;
@@ -51,5 +54,7 @@ private:
     void copy(const ConwayMatrix&);
     void move(ConwayMatrix&&);
     bool wrongLocation(int, int) const;
+    int positionX;
+    int positionY;
 };
 

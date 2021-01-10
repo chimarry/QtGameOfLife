@@ -1,4 +1,3 @@
-#pragma once
 #include "ConwayMatrix.h"
 #include<exception>
 #include<stdexcept>
@@ -62,6 +61,22 @@ const ConwayMatrix::Cell& ConwayMatrix::operator[](const Index& index) const noe
 
 size_t ConwayMatrix::getColumnCount() const {
     return (size_t)m;
+}
+
+size_t ConwayMatrix::getRowCount() const
+{
+    return (size_t)n;
+}
+
+void ConwayMatrix::setPosition(int x, int y)
+{
+    positionX = x;
+    positionY = y;
+}
+
+std::tuple<int, int> ConwayMatrix::getPosition() const
+{
+    return std::tuple<int, int>(positionX,positionY);
 }
 
 void ConwayMatrix::fromIntVector(int* vector)

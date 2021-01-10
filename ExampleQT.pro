@@ -12,7 +12,6 @@ SOURCES += \
     ConwayGameOfLifeExecutor.cpp \
     ConwayMatrix.cpp \
     OpenCLConfiguration.cpp \
-    imagechanger.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -20,7 +19,6 @@ HEADERS += \
     ConwayGameOfLifeExecutor.h \
     ConwayMatrix.h \
     OpenCLConfiguration.h \
-    imagechanger.h \
     mainwindow.h
 
 FORMS += \

@@ -27,19 +27,11 @@ void ConwayGameOfLifeExecutor::simulate() {
     else
         initialMatrix.randomInitialize();
 
-    /*ConwayMatrix subSegment = ConwayMatrix(20, 20);
-    subSegment.fromImage("Input.pgm");
-
-    std::cout << subSegment << std::endl << "sub segment printed" << std::endl;
-    std::cout << initialMatrix << "initial matrix printed" << std::endl;
-
-    int* newData = addSubSegment(initialMatrix, subSegment.toIntVector(), 1, 1, 20, 20);
-    initialMatrix.fromIntVector(newData);
-    std::cout << initialMatrix << "after adding subsegment" << std::endl;
-    int* sub = getSubSegment(initialMatrix, 1, 1, 20, 20);
-    subSegment.fromIntVector(sub);
-    std::cout << "GET SUBSEGMENT:" << subSegment;
-    return;*/
+    if (segmentToAdd)
+    {
+        int* newDataWithSegment = addSubSegment(initialMatrix, *segmentToAdd);
+        initialMatrix.fromIntVector(newDataWithSegment);
+    }
 
     int* initialVector = initialMatrix.toIntVector();
 
@@ -94,9 +86,18 @@ void ConwayGameOfLifeExecutor::simulate() {
     delete[](initialVector);
 }
 
-int* ConwayGameOfLifeExecutor::addSubSegment(const ConwayMatrix& original, int* subSegmentData, int positionRow, int positionColumn, int rowCount, int columnCount)
+void ConwayGameOfLifeExecutor::addSubSegment(SubSegment subSegmentInfo)
 {
-    return manipulateSubSegment(ADD_SUB_SEGMENT, original, subSegmentData, positionRow, positionColumn, rowCount, columnCount, original.getSize());
+    segmentToAdd = new ConwayMatrix(subSegmentInfo.rowCount, subSegmentInfo.rowCount);
+    segmentToAdd->setPosition(subSegmentInfo.positionX, subSegmentInfo.positionY);
+    segmentToAdd->fromImage(subSegmentInfo.subSegmentFilePath);
+}
+
+int* ConwayGameOfLifeExecutor::addSubSegment(const ConwayMatrix& original, const ConwayMatrix& subSegment)
+{
+    int x, y;
+    std::tie(x, y) = subSegment.getPosition();
+    return manipulateSubSegment(ADD_SUB_SEGMENT, original, subSegment.toIntVector(), x, y, subSegment.getRowCount(), subSegment.getColumnCount(), original.getSize());
 }
 
 int* ConwayGameOfLifeExecutor::getSubSegment(const ConwayMatrix& original, int positionRow, int positionColumn, int rowCount, int columnCount)

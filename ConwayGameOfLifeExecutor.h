@@ -7,10 +7,18 @@
 
 class ConwayGameOfLifeExecutor:public QObject
 {
+public:
+    struct SubSegment {
+        const char* subSegmentFilePath;
+        int positionY;
+        int positionX;
+        int rowCount;
+        int columnCount;
+    };
 Q_OBJECT
 public:
     ConwayGameOfLifeExecutor() = delete;
-    explicit ConwayGameOfLifeExecutor(int iterationCount, const char* fromFile);
+    explicit ConwayGameOfLifeExecutor(int iterationCount, const char* fromFile = nullptr);
     ConwayGameOfLifeExecutor(const ConwayGameOfLifeExecutor&) = delete;
     ConwayGameOfLifeExecutor(ConwayGameOfLifeExecutor&&) = delete;
     ConwayGameOfLifeExecutor& operator=(const ConwayGameOfLifeExecutor&) = delete;
@@ -18,8 +26,9 @@ public:
     ~ConwayGameOfLifeExecutor();
 
     void simulate();
-private:
-    int* addSubSegment(const ConwayMatrix& initialMatrix, int* subsegment, int positionRow, int positionColumn, int rowCount, int columnCount);
+    void addSubSegment(SubSegment subSegmentInfo);
+    private:
+    int* addSubSegment(const ConwayMatrix& initialMatrix, const ConwayMatrix& subSegment);
     int* getSubSegment(const ConwayMatrix& initialMatrix, int positionRow, int positionColumn, int rowCount, int columnCount);
     int* manipulateSubSegment(const char* kernelName, const ConwayMatrix& initialMatrix, int* subsegment,
         int positionRow, int positionColumn, int rowCount, int columnCount, int outputSize, bool getSubSegment = false);
@@ -32,5 +41,6 @@ signals:
 
 private:
     int iterationCount;
-    const char* initialFile;
+    const char* initialFile = nullptr;
+    ConwayMatrix* segmentToAdd = nullptr;
 };

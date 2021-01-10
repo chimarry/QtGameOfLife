@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "ConwayGameOfLifeExecutor.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -18,12 +19,13 @@ public slots:
     void changeImage(const QString fileName, int iteration);
 private slots:
     void on_simulateButton_clicked();
-
     void on_initalizeFromImageButton_clicked();
+    void on_addSubSegmentButton_clicked();
 
 private:
     Ui::MainWindow *ui;
-    int iterationCount;
     QString initialFile;
+    int iterationCount;
+    ConwayGameOfLifeExecutor::SubSegment* segmentToAdd = nullptr;
 };
 #endif // MAINWINDOW_H
