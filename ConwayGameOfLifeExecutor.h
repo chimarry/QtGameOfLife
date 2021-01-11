@@ -18,14 +18,14 @@ public:
     Q_OBJECT
 public:
     ConwayGameOfLifeExecutor() = delete;
-    explicit ConwayGameOfLifeExecutor(int iterationCount, const char* fromFile = nullptr);
+    explicit ConwayGameOfLifeExecutor(int iterationCount, int width, int height, const char* fromFile = nullptr);
     ConwayGameOfLifeExecutor(const ConwayGameOfLifeExecutor&) = delete;
     ConwayGameOfLifeExecutor(ConwayGameOfLifeExecutor&&) = delete;
     ConwayGameOfLifeExecutor& operator=(const ConwayGameOfLifeExecutor&) = delete;
     ConwayGameOfLifeExecutor& operator=(ConwayGameOfLifeExecutor&&) = delete;
     ~ConwayGameOfLifeExecutor();
 
-    void simulate();
+    void simulate(bool sleep = false);
     void addSubSegment(SubSegment subSegmentInfo);
     int* getSubSegment(int positionX, int positionY, int rowCount, int columnCount);
     int* getSubSegment(const ConwayMatrix& initialMatrix, int positionRow, int positionColumn, int rowCount, int columnCount);
@@ -43,6 +43,8 @@ signals:
 
 private:
     int iterationCount;
+    int width;
+    int height;
     const char* initialFile = nullptr;
     ConwayMatrix* segmentToAdd = nullptr;
     ConwayMatrix* gamePlatform = nullptr;

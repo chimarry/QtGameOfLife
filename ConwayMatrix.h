@@ -33,8 +33,8 @@ public:
     {
         system("cls");
         HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-        for (int i = 0; i < matrix.n; ++i, s << std::endl)
-            for (int j = 0; j < matrix.m; ++j) {
+        for (int i = 0; i < matrix.rowCount; ++i, s << std::endl)
+            for (int j = 0; j < matrix.columnCount; ++j) {
                 int value = (matrix.mat[i][j] == ConwayMatrix::Cell::DEAD) ? 7 : 254;
                 SetConsoleTextAttribute(hConsole, value);
                 s << "  ";
@@ -48,8 +48,8 @@ public:
     void setPosition(int, int);
     std::tuple<int,int> getPosition() const;
 private:
-    int n;
-    int m;
+    int rowCount;
+    int columnCount;
     Cell** mat;
     void copy(const ConwayMatrix&);
     void move(ConwayMatrix&&);

@@ -2,11 +2,11 @@
 #include<exception>
 #include<stdexcept>
 
-ConwayMatrix::ConwayMatrix(int n, int mm) :n(n), m(mm ? mm : n), mat(new ConwayMatrix::Cell* [n])
+ConwayMatrix::ConwayMatrix(int n, int mm) :rowCount(n), columnCount(mm ? mm : n), mat(new ConwayMatrix::Cell* [n])
 {
     for (int i = 0; i < n; ++i) {
-        mat[i] = new ConwayMatrix::Cell[m];
-        std::fill_n(mat[i], m, ConwayMatrix::Cell::DEAD);
+        mat[i] = new ConwayMatrix::Cell[columnCount];
+        std::fill_n(mat[i], columnCount, ConwayMatrix::Cell::DEAD);
     }
 }
 
@@ -40,18 +40,18 @@ ConwayMatrix& ConwayMatrix::operator=(ConwayMatrix&& matrix) noexcept
 
 ConwayMatrix::~ConwayMatrix()
 {
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < rowCount; ++i) {
         delete[] mat[i];
         mat[i] = nullptr;
     }
     delete[] mat;
     mat = nullptr;
-    m = n = 0;
+    columnCount = rowCount = 0;
 }
 
 size_t ConwayMatrix::getSize() const
 {
-    return (size_t)n * m;
+    return (size_t)rowCount * columnCount;
 }
 
 const ConwayMatrix::Cell& ConwayMatrix::operator[](const Index& index) const noexcept(false)
@@ -60,12 +60,12 @@ const ConwayMatrix::Cell& ConwayMatrix::operator[](const Index& index) const noe
 }
 
 size_t ConwayMatrix::getColumnCount() const {
-    return (size_t)m;
+    return (size_t)columnCount;
 }
 
 size_t ConwayMatrix::getRowCount() const
 {
-    return (size_t)n;
+    return (size_t)rowCount;
 }
 
 void ConwayMatrix::setPosition(int x, int y)
@@ -81,16 +81,16 @@ std::tuple<int, int> ConwayMatrix::getPosition() const
 
 void ConwayMatrix::fromIntVector(int* vector)
 {
-    for (int i = 0; i < n; ++i)
-        for (int j = 0; j < m; ++j)
-            mat[i][j] = static_cast<ConwayMatrix::Cell>(vector[i * m + j]);
+    for (int i = 0; i < rowCount; ++i)
+        for (int j = 0; j < columnCount; ++j)
+            mat[i][j] = static_cast<ConwayMatrix::Cell>(vector[i * columnCount + j]);
 }
 
 void ConwayMatrix::randomInitialize()
 {
-    for (int i = 0; i < n; ++i)
-        for (int j = 0; j < m; ++j)
-            if (i == 0 || i == n - 1 || m == 0 || j == m - 1)
+    for (int i = 0; i < rowCount; ++i)
+        for (int j = 0; j < columnCount; ++j)
+            if (i == 0 || i == rowCount - 1 || columnCount == 0 || j == columnCount - 1)
                 mat[i][j] = ConwayMatrix::Cell::DEAD;
             else
                 mat[i][j] = (rand() % 100) > 50 ? ConwayMatrix::Cell::DEAD : ConwayMatrix::Cell::ALIVE;
@@ -99,9 +99,9 @@ void ConwayMatrix::randomInitialize()
 int* ConwayMatrix::toIntVector() const
 {
     int* vector = new int[getSize()];
-    for (int i = 0; i < n; ++i)
-        for (int j = 0; j < m; ++j)
-            vector[i * m + j] = mat[i][j];
+    for (int i = 0; i < rowCount; ++i)
+        for (int j = 0; j < columnCount; ++j)
+            vector[i * columnCount + j] = mat[i][j];
     return vector;
 }
 
@@ -113,47 +113,47 @@ void ConwayMatrix::fromImage(const char* filename)
     {
         throw "error";
     }
-    unsigned char* image = new unsigned char[(size_t)n * m];
-    fread(image, sizeof(unsigned char), (size_t)n * (size_t)m, fp);
+    unsigned char* image = new unsigned char[(size_t)rowCount * columnCount];
+    fread(image, sizeof(unsigned char), (size_t)rowCount * (size_t)columnCount, fp);
     fclose(fp);
-    for (int i = 0; i < n; ++i)
-        for (int j = 0; j < m; ++j)
-            mat[i][j] = image[i * m + j] == 255 ? ConwayMatrix::ALIVE : ConwayMatrix::DEAD;
+    for (int i = 0; i < rowCount; ++i)
+        for (int j = 0; j < columnCount; ++j)
+            mat[i][j] = image[i * columnCount + j] == 255 ? ConwayMatrix::ALIVE : ConwayMatrix::DEAD;
 }
 
 void ConwayMatrix::writeToImage(const char* filename) const
 {
     FILE* fp = fopen(filename, "wb");
-    fprintf(fp, "P5\n%d %d\n255\n", n, m);
+    fprintf(fp, "P5\n%d %d\n255\n", columnCount, rowCount);
     int* intVector = toIntVector();
-    unsigned char* charVector = new unsigned char[n * m];
-    for (int i = 0; i < n * m; ++i)
+    unsigned char* charVector = new unsigned char[rowCount * columnCount];
+    for (int i = 0; i < rowCount * columnCount; ++i)
         charVector[i] = intVector[i] == 0 ? 0 : 255;
-    fwrite(charVector, sizeof(unsigned char), (size_t)n * (size_t)m, fp);
+    fwrite(charVector, sizeof(unsigned char), (size_t)rowCount * (size_t)columnCount, fp);
     fclose(fp);
 }
 
 void ConwayMatrix::copy(const ConwayMatrix& matrix)
 {
-    n = matrix.n;
-    m = matrix.m;
-    mat = new ConwayMatrix::Cell * [n];
-    for (int i = 0; i < n; i++)
+    rowCount = matrix.rowCount;
+    columnCount = matrix.columnCount;
+    mat = new ConwayMatrix::Cell * [rowCount];
+    for (int i = 0; i < rowCount; i++)
     {
-        mat[i] = new ConwayMatrix::Cell[m];
-        std::copy(matrix.mat[i], matrix.mat[i] + m, mat[i]);
+        mat[i] = new ConwayMatrix::Cell[columnCount];
+        std::copy(matrix.mat[i], matrix.mat[i] + columnCount, mat[i]);
     }
 }
 
 void ConwayMatrix::move(ConwayMatrix&& matrix)
 {
-    n = matrix.n;
-    m = matrix.m;
+    rowCount = matrix.rowCount;
+    columnCount = matrix.columnCount;
     mat = matrix.mat;
     matrix.mat = nullptr;
 }
 
 bool ConwayMatrix::wrongLocation(int i, int j) const
 {
-    return (i < 0 || i >= n || j < 0 || j >= m) ? true : false;
+    return (i < 0 || i >= rowCount || j < 0 || j >= columnCount) ? true : false;
 }

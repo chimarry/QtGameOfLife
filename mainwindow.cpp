@@ -52,8 +52,12 @@ void MainWindow::on_simulateButton_clicked()
     const char* file = fileString.c_str();
     if(file[0] == '\0')
         file = nullptr;
+
+    int width = ui->gameWidth->toPlainText().toInt();
+    int height = ui->gameHeight->toPlainText().toInt();
+
+    executor =  new ConwayGameOfLifeExecutor(iterationCount, width, height, file);
     // Add one segment
-    executor =  new ConwayGameOfLifeExecutor(iterationCount, file);
     if(segmentToAdd)
         executor->addSubSegment(*segmentToAdd);
     else{
@@ -64,7 +68,7 @@ void MainWindow::on_simulateButton_clicked()
         ui->positionY->clear();
     }
     connect(executor,&ConwayGameOfLifeExecutor::imageSaved,this,&MainWindow::changeImage);
-    executor->simulate();
+    executor->simulate(true);
     ui->simulateButton->setEnabled(true);
     ui->initalizeFromImageButton->setEnabled(true);
     ui->addSubSegmentButton->setEnabled(true);
@@ -107,9 +111,9 @@ void MainWindow::on_addSubSegmentButton_clicked()
     segmentToAdd->columnCount = ui->height->toPlainText().toInt();
 
     QImage image(fileNames[0]);
-    image.scaled(100,100);
+    image.scaled(150,150);
     QPixmap pixmap = QPixmap::fromImage(image);
-    pixmap = pixmap.scaled(100,100);
+    pixmap = pixmap.scaled(150,150);
     ui->subSegmentLabel->setPixmap(pixmap);
     ui->addSubSegmentButton->setEnabled(false);
 }
@@ -124,8 +128,8 @@ void MainWindow::on_getSubSegmentButton_clicked()
 
     // Display segment
     QImage image("C:\\Users\\Marija\\Desktop\\test\\segment.pgm");
-    image.scaled(100,100);
+    image.scaled(150,150);
     QPixmap pixmap = QPixmap::fromImage(image);
-    pixmap = pixmap.scaled(100,100);
+    pixmap = pixmap.scaled(150,150);
     ui->getSubSegmentLabel->setPixmap(pixmap);
 }
