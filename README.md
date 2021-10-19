@@ -20,7 +20,4 @@ Game space is represented with a two-dimensional net of cells, where each cell c
 - Each feature is implemented as a separate kernel,
 - If dimensions of space are big, divide job in separate kernel calls,
 - Allocate space for the game on the device,
-- Using Qt framework, create client's application that uses previously created library, simulates Game of Life with previously described options (export as an image, go to specific iteration, create a matrix with custom dimensions...)
-
-## Building and running application
-In order to run the application, Java 8 must be installed, and some Web server (like Tomcat 9) must be configured.
+- Using Qt framework, create client's application that uses previously created library, simulates Game of Life with previously described options (export as an image, go to specific iteration, create a matrix with custom dimensions...).
